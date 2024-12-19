@@ -17,17 +17,17 @@ return new class extends Migration
         $table->string('email')->unique();
         $table->timestamp('email_verified_at')->nullable();
         $table->string('password');
-        $table->string('role')->default('user'); // user, admin
+        $table->string('role')->default('user'); // user, admin, superadmin
         $table->rememberToken();
         $table->timestamps();
     });
-
-    // Crear el superadmin
+    
+    // Crear el superadmin (ID=1)
     $user = new \App\Models\User();
-    $user->name = 'Admin';
-    $user->email = 'admin@test.es';
+    $user->name = 'Superadmin';
+    $user->email = 'superadmin@test.es';
     $user->password = Hash::make('password');
-    $user->role = 'admin';
+    $user->role = 'superadmin';
     $user->email_verified_at = now();
     $user->save();
 
