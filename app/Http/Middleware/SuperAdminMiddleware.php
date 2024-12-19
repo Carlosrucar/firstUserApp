@@ -15,6 +15,9 @@ class SuperAdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (!Auth::check() || Auth::id() !== 1) {
+        return redirect('/home');
+    }
         return $next($request);
     }
 }

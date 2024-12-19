@@ -9,25 +9,27 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('role')->default('user');
-            $table->rememberToken();
-            $table->timestamps();
-        });
-        $user = new App\Models\User();
-        $user->name = 'Admin';
-        $user->email = 'admin@test.es';
-        $user->password = Hash::make('password');
-        $user->role = 'admin';
-        $user->email_verified_at = now();
-        $user->save();
+    public function up()
+{
+    Schema::create('users', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('email')->unique();
+        $table->timestamp('email_verified_at')->nullable();
+        $table->string('password');
+        $table->string('role')->default('user'); // user, admin
+        $table->rememberToken();
+        $table->timestamps();
+    });
+
+    // Crear el superadmin
+    $user = new \App\Models\User();
+    $user->name = 'Admin';
+    $user->email = 'admin@test.es';
+    $user->password = Hash::make('password');
+    $user->role = 'admin';
+    $user->email_verified_at = now();
+    $user->save();
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

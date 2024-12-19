@@ -16,14 +16,15 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::user();
-        $user = $request->user();
-        if($user == null){
-            return redirect()->route('index');
-        }
-        if($user->role != 'admin'){
-            return redirect()->route('home');
-        }
-        return $next($request);
+    if (!Auth::check()) {
+        return redirect('/');
+    }
+    
+    $user = Auth::user();
+    if ($user->role != 'admin') {
+        return redirect('/home');
+    }
+
+    return $next($request);
     }
 }

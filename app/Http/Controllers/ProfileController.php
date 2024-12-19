@@ -21,25 +21,23 @@ class ProfileController extends Controller
             'current_password' => 'nullable',
             'new_password' => 'nullable|min:8|confirmed',
         ]);
-
+    
         $user = Auth::user();
         $user->name = $request->name;
-
+    
         if ($user->email !== $request->email) {
             $user->email = $request->email;
             $user->email_verified_at = null;
         }
-
-        if ($request->filled('current_password') && $request->filled('new_password')) {
+    
+        if ($request->filled('new_password')) {
             if (!Hash::check($request->current_password, $user->password)) {
                 return back()->withErrors(['current_password' => 'La contraseña actual no es correcta']);
             }
-
             $user->password = Hash::make($request->new_password);
         }
-
+    
         $user->save();
-
-        return redirect()->route('profile.show')->with('status', 'Perfil actualizado con éxito');
+        return back()->with('status', 'Perfil actualizado correctamente');
     }
 }

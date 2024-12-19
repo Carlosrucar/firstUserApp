@@ -1,11 +1,15 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+Auth::routes(['verify' => true]);
 
-Auth::routes();
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'home'])->name('home');
-Route::get('/admin', [App\Http\Controllers\AdministratorsController::class, 'index'])->name('admin.index');
-Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'showProfileForm'])->name('profile.show');
-Route::post('/profile', [App\Http\Controllers\ProfileController::class, 'updateProfile'])->name('profile.update');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/home', [HomeController::class, 'home'])->name('home');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::resource('users', UserController::class);
+});
