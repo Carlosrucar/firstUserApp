@@ -28,10 +28,12 @@
 
         <div class="mb-3">
             <label for="role" class="form-label">Rol</label>
-            <select class="form-control @error('role') is-invalid @enderror" 
-                    id="role" name="role" {{ $user->id == 1 ? 'disabled' : '' }}>
+            <select class="form-control @error('role') is-invalid @enderror" id="role" name="role">
                 <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>Usuario</option>
                 <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Administrador</option>
+                @if(Auth::user()->role === 'superadmin')
+                    <option value="superadmin" {{ $user->role == 'superadmin' ? 'selected' : '' }}>Superadmin</option>
+                @endif
             </select>
             @error('role')
                 <span class="invalid-feedback">{{ $message }}</span>
