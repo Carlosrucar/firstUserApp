@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\SuperAdminMiddleware;
+use App\Models\User;
 
 class AdministratorsController extends Controller
 {
