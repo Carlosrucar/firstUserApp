@@ -7,7 +7,7 @@
             <a href="{{ route('users.create') }}" class="btn btn-success">Crear Nuevo Usuario</a>
         </div>
     @endif
-    
+
     <table class="table">
         <thead>
             <tr>
@@ -25,8 +25,8 @@
                     <td>{{ $user->role }}</td>
                     <td>
                         @if(Auth::user()->role === 'superadmin' && Auth::id() === $user->id)
-                            <button type="button" class="btn btn-sm btn-primary" disabled 
-                                    title="No puedes editarte a ti mismo como superadmin">
+                            <button type="button" class="btn btn-sm btn-primary" disabled
+                                title="No puedes editarte a ti mismo como superadmin">
                                 Editar
                             </button>
                         @else
@@ -35,38 +35,46 @@
                             </a>
                         @endif
                         @if($user->role === 'superadmin' || $user->id === 1)
-                            <button type="button" class="btn btn-sm btn-danger" disabled 
-                                    title="No se puede eliminar al superadmin">
+                            <button type="button" class="btn btn-sm btn-danger" disabled
+                                title="No se puede eliminar al superadmin">
                                 Eliminar
                             </button>
                         @else
-                            <button type="button" class="btn btn-sm btn-danger" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#deleteModal{{ $user->id }}">
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal{{ $user->id }}">
                                 Eliminar
                             </button>
+                            @if(Auth::user()->role === 'superadmin')
+                                @if(!$user->email_verified_at)
+                                    <form action="{{ route('users.verify-email', $user) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            Verificar Email
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="badge bg-success">Verificado</span>
+                                @endif
+                            @endif
 
                             <!-- Modal Confirmación -->
-                            <div class="modal fade" id="deleteModal{{ $user->id }}" 
-                                 tabindex="-1" aria-labelledby="deleteModalLabel" 
-                                 aria-hidden="true">
+                            <div class="modal fade" id="deleteModal{{ $user->id }}" tabindex="-1"
+                                aria-labelledby="deleteModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title">Confirmar eliminación</h5>
-                                            <button type="button" class="btn-close" 
-                                                    data-bs-dismiss="modal" aria-label="Close">
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            ¿Estás seguro de que quieres eliminar al usuario 
+                                            ¿Estás seguro de que quieres eliminar al usuario
                                             <strong>{{ $user->name }}</strong>?
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" 
-                                                    data-bs-dismiss="modal">Cancelar</button>
-                                            <form action="{{ route('users.destroy', $user) }}" 
-                                                  method="POST" class="d-inline">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Cancelar</button>
+                                            <form action="{{ route('users.destroy', $user) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger">

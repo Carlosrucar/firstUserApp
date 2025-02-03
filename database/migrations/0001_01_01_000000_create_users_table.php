@@ -22,7 +22,6 @@ return new class extends Migration
         $table->timestamps();
     });
     
-    // Crear el superadmin (ID=1)
     $user = new \App\Models\User();
     $user->name = 'Superadmin';
     $user->email = 'superadmin@test.es';

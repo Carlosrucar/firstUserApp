@@ -6,7 +6,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    Hola
+                   Users
                 </div>
                 <div class="card-body">
                     <a href="{{ url('login') }}">Login</a>
