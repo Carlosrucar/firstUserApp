@@ -18,20 +18,27 @@
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->role }}</td>
                     <td>
-                        <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-primary">
-                            Editar
-                        </a>
-                    @if($user->role === 'superadmin' || $user->id === 1)
-                    <button type="button" class="btn btn-sm btn-danger" disabled 
-                            title="No se puede eliminar al superadmin">
-                        Eliminar
-                    </button>
-                @else
-                    <button type="button" class="btn btn-sm btn-danger" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#deleteModal{{ $user->id }}">
-                    Eliminar
-                </button>
+                        @if(Auth::user()->role === 'superadmin' && Auth::id() === $user->id)
+                            <button type="button" class="btn btn-sm btn-primary" disabled 
+                                    title="No puedes editarte a ti mismo como superadmin">
+                                Editar
+                            </button>
+                        @else
+                            <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-primary">
+                                Editar
+                            </a>
+                        @endif
+                        @if($user->role === 'superadmin' || $user->id === 1)
+                            <button type="button" class="btn btn-sm btn-danger" disabled 
+                                    title="No se puede eliminar al superadmin">
+                                Eliminar
+                            </button>
+                        @else
+                            <button type="button" class="btn btn-sm btn-danger" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteModal{{ $user->id }}">
+                                Eliminar
+                            </button>
 
                             <!-- Modal Confirmación -->
                             <div class="modal fade" id="deleteModal{{ $user->id }}" 

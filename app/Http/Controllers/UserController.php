@@ -29,30 +29,34 @@ class UserController extends Controller {
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'role' => 'required|in:admin,user,superadmin'  // Validamos los roles permitidos
+            'role' => 'required|in:admin,user'
         ]);
     
-        // Proteger al superadmin original (ID=1)
-        if ($user->id === 1) {
-            return back()->with('error', 'No se puede modificar al superadmin original');
+        // Prevent changing role if target user is superadmin
+        if ($user->role === 'superadmin') {
+            return back()->with('error', 'No se puede modificar el rol de un superadmin');
         }
     
-        // Solo superadmin puede modificar roles
-        if (Auth::user()->role !== 'superadmin' && $data['role'] !== $user->role) {
-            return back()->with('error', 'Solo el superadmin puede cambiar roles');
+        // Modificar esta condición para permitir que superadmin cambie roles
+        if (Auth::user()->role === 'superadmin' || Auth::user()->role === 'admin') {
+            $user->update($data);
+            return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente');
         }
     
-        // Evitar que un admin se asigne rol de superadmin
-        if ($data['role'] === 'superadmin' && Auth::user()->role !== 'superadmin') {
-            return back()->with('error', 'No tienes permisos para asignar rol de superadmin');
+        // Si no es admin ni superadmin, solo puede actualizar sus propios datos sin cambiar rol
+        if (Auth::id() === $user->id) {
+            if ($data['role'] !== $user->role) {
+                return back()->with('error', 'No tienes permisos para cambiar roles');
+            }
+            $user->update($data);
+            return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente');
         }
     
-        $user->update($data);
-        return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente');
+        return back()->with('error', 'No tienes permisos para editar este usuario');
     }
 
     public function destroy(User $user)
-{
+    {
     // Verificar si es superadmin por rol o por ID
     if($user->id === 1 || $user->role === 'superadmin') {
         return back()->with('error', 'No se puede eliminar al superadministrador del sistema');
@@ -65,15 +69,19 @@ class UserController extends Controller {
 public function edit(User $user)
 {
     // Verificar si es superadmin por rol o por ID
+    if (Auth::user()->role === 'superadmin' && Auth::id() === $user->id) {
+        return back()->with('error', 'No puedes editarte a ti mismo como superadmin');
+    }
+
+    // Rest of the existing checks...
     if(($user->id === 1 || $user->role === 'superadmin') && Auth::user()->id !== $user->id) {
         return back()->with('error', 'No se puede editar al superadministrador del sistema');
     }
 
-    // Solo superadmin puede editar otros admins
     if ($user->role === 'admin' && Auth::user()->role !== 'superadmin') {
         return back()->with('error', 'No tienes permisos para editar administradores');
     }
 
     return view('users.edit', compact('user'));
-}
+    }
 }
