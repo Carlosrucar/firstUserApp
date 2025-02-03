@@ -2,6 +2,12 @@
 
 @section('content')
 <div class="container">
+    @if(Auth::user()->role === 'superadmin')
+        <div class="mb-3">
+            <a href="{{ route('users.create') }}" class="btn btn-success">Crear Nuevo Usuario</a>
+        </div>
+    @endif
+    
     <table class="table">
         <thead>
             <tr>

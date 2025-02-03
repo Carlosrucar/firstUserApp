@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller {
     public function index()
@@ -83,5 +84,36 @@ public function edit(User $user)
     }
 
     return view('users.edit', compact('user'));
+    }
+
+    public function create()
+    {
+        // Only superadmin can create users
+        if (Auth::user()->role !== 'superadmin') {
+            return back()->with('error', 'Solo el superadmin puede crear usuarios');
+        }
+    
+        return view('users.create');
+    }
+    
+    public function store(Request $request)
+    {
+        // Only superadmin can create users
+        if (Auth::user()->role !== 'superadmin') {
+            return back()->with('error', 'Solo el superadmin puede crear usuarios');
+        }
+    
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+            'role' => 'required|in:user,admin'
+        ]);
+    
+        // Hash the password
+        $data['password'] = Hash::make($data['password']);
+    
+        User::create($data);
+        return redirect()->route('users.index')->with('success', 'Usuario creado correctamente');
     }
 }
