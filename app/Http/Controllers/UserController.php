@@ -100,4 +100,21 @@ class UserController extends Controller
 
         return back()->with('success', 'Email verificado correctamente');
     }
+
+    public function edit(User $user)
+{
+    // Check if user is superadmin trying to edit themselves
+    if (Auth::user()->role === 'superadmin' && Auth::id() === $user->id) {
+        return back()->with('error', 'No puedes editarte a ti mismo como superadmin');
+    }
+
+    // Check if trying to edit superadmin
+    if (($user->role === 'superadmin' || $user->id === 1) && Auth::id() !== $user->id) {
+        return back()->with('error', 'No se puede editar al superadministrador del sistema');
+    }
+
+    // Removed the admin restriction check to allow admins to edit other admins
+
+    return view('users.edit', compact('user'));
+}
 }

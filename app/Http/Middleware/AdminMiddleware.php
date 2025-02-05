@@ -15,16 +15,16 @@ class AdminMiddleware
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
-    {
+{
     if (!Auth::check()) {
-        return redirect('/');
+        return redirect('/login');
     }
     
     $user = Auth::user();
-    if ($user->role != 'admin') {
-        return redirect('/home');
+    if ($user->role !== 'admin' && $user->role !== 'superadmin') {
+        return redirect()->back()->with('error', 'No tienes permisos para acceder a esta sección');
     }
 
     return $next($request);
-    }
+}
 }
